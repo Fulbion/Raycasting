@@ -43,19 +43,54 @@ void Player::drawMap2D(sf::RenderWindow& i_window)
 	i_window.draw(sprite);
 }
 
-void Player::draw(sf::RenderWindow& i_window)
+void Player::draw(sf::RenderWindow& i_window, bool fishEye)
 {
 	float distance = 0.5 * CELL_SIZE / tan(degToRad(0.5 * FOV_3D));
+	float wallHeight;
+
+	int currentColumn;
+	int nextColumn = SCREEN_WIDTH;
+	int previousColumn = SHRT_MIN;
 
 	for (int i = 0; i < SCREEN_WIDTH; i++)
 	{
-		float wallHeight = round(SCREEN_HEIGHT * distance / viewRays[i]);
+		float rayDirection = FOV * (floor(0.5 * SCREEN_WIDTH) - i) / (SCREEN_WIDTH - 1);
+		float rayProjection = 0.5 * tan(degToRad(rayDirection)) / tan(degToRad(0.5 * FOV));
 
-		sf::RectangleShape wall(sf::Vector2f(1, wallHeight));
-		wall.setFillColor(sf::Color(0, 255 * (1 - viewRays[i] / RENDER_DISTANCE), 0));
-		wall.setPosition(i, 0.5 * (SCREEN_HEIGHT - wallHeight));
+		if (fishEye)
+		{
+			wallHeight = round(SCREEN_HEIGHT * distance / viewRays[i]);
 
-		i_window.draw(wall);
+			sf::RectangleShape wall(sf::Vector2f(1, wallHeight));
+			wall.setFillColor(sf::Color(0, 255 * (1 - viewRays[i] / RENDER_DISTANCE), 0));
+			wall.setPosition(i, 0.5 * (SCREEN_HEIGHT - wallHeight));
+
+			i_window.draw(wall);
+		}
+
+		else
+		{
+			currentColumn = round((0.5 - rayProjection) * SCREEN_WIDTH);
+			
+			
+			if (i < SCREEN_WIDTH - 1)
+			{
+				float nextRayDirection = FOV * (floor(0.5 * SCREEN_WIDTH) - 1 - i) / (SCREEN_WIDTH - 1);
+				rayProjection = 0.5 * tan(degToRad(nextRayDirection)) / tan(degToRad(0.5 * FOV));
+				nextColumn = round((0.5 - rayProjection) * SCREEN_WIDTH);
+			}
+
+			if (previousColumn < currentColumn)
+			{
+				wallHeight = round(SCREEN_HEIGHT * distance / (viewRays[i] * cos(degToRad(rayDirection))));
+				
+				sf::RectangleShape wall(sf::Vector2f(std::max(1, nextColumn - currentColumn), wallHeight));
+				wall.setFillColor(sf::Color(0, 255 * (1 - viewRays[i] / RENDER_DISTANCE), 0));
+				wall.setPosition(currentColumn, 0.5 * (SCREEN_HEIGHT - wallHeight));
+
+				i_window.draw(wall);
+			}
+		}
 	}
 }
 
@@ -66,12 +101,12 @@ void Player::update(std::array<std::array<Cell, MAP_HEIGHT>, MAP_WIDTH> i_map)
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
 	{
-		direction += 2.8125f;
+		direction += 5.625;
 	}
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
 	{
-		direction -= 2.8125f;
+		direction -= 5.625;
 	}
 
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Z))

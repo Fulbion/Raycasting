@@ -10,12 +10,13 @@
 int main()
 {
 	sf::RenderWindow window(sf::VideoMode(SCREEN_WIDTH, SCREEN_HEIGHT), "Raycasting");
-	window.setFramerateLimit(60);
+	window.setFramerateLimit(30);
 
 	sf::Texture t_mapWall; t_mapWall.loadFromFile("assets/wall" + std::to_string(CELL_SIZE) + ".png");
 	sf::Sprite mapWall(t_mapWall);
 
 	bool drawMap = true;
+	bool fishEye = false;
 
 	std::array<std::array<Cell, MAP_HEIGHT>, MAP_WIDTH> map{};
 
@@ -40,13 +41,19 @@ int main()
 					if (drawMap) drawMap = false;
 					else         drawMap = true;
 				}
+
+				if (event.key.code == sf::Keyboard::F)
+				{
+					if (fishEye) fishEye = false;
+					else         fishEye = true;
+				}
 			}
 		}
 
 		window.clear();
 
 		player.update(map);
-		player.draw(window);
+		player.draw(window, fishEye);
 
 		if (drawMap)
 		{
