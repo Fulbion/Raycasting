@@ -17,6 +17,7 @@ int main()
 
 	bool drawMap = true;
 	bool fishEye = false;
+	bool debugInfo = false;
 
 	std::array<std::array<Cell, MAP_HEIGHT>, MAP_WIDTH> map{};
 
@@ -47,6 +48,12 @@ int main()
 					if (fishEye) fishEye = false;
 					else         fishEye = true;
 				}
+
+				if (event.key.code == sf::Keyboard::I)
+				{
+					if (debugInfo) debugInfo = false;
+					else           debugInfo = true;
+				}
 			}
 		}
 
@@ -54,6 +61,7 @@ int main()
 
 		player.update(map);
 		player.draw(window, fishEye);
+		if (debugInfo) player.displayDebugInfo(window, fishEye);
 
 		if (drawMap)
 		{

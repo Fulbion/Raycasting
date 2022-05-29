@@ -15,6 +15,29 @@ void Player::setPosition(float i_x, float i_y)
 	y = i_y;
 }
 
+void Player::displayDebugInfo(sf::RenderWindow& i_window, bool fishEye)
+{
+	float displayDirection = getDegrees(abs(360 - direction + 90));
+
+	sf::Font fixedsys;
+	fixedsys.loadFromFile("assets/Fixedsys.ttf");
+
+	sf::Text debugInfo;
+	debugInfo.setFont(fixedsys);
+	debugInfo.setPosition(sf::Vector2f(640, 0));
+	debugInfo.setCharacterSize(32);
+	debugInfo.setString(
+		"X: " + std::to_string(static_cast<int>(x)) + '\n' +
+		"Y: " + std::to_string(static_cast<int>(y)) + '\n' +
+		"DIRECTION: " + std::to_string(static_cast<int>(displayDirection)) + '\n' +
+		"FOV: " + std::to_string(static_cast<int>(FOV)) + '\n' +
+		"RENDER DIST.: " + std::to_string(static_cast<int>(RENDER_DISTANCE)) + '\n' +
+		"FISH-EYE: " + std::to_string(fishEye)
+	);
+
+	i_window.draw(debugInfo);
+}
+
 void Player::drawMap2D(sf::RenderWindow& i_window)
 {
 	float frame = 360 / (static_cast<float>(texture.getSize().x) / texture.getSize().y);
@@ -99,6 +122,29 @@ void Player::update(std::array<std::array<Cell, MAP_HEIGHT>, MAP_WIDTH> i_map)
 	int xStep = 0;
 	int yStep = 0;
 
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::LControl))
+	{
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Add))
+		{
+			FOV++;
+		}
+
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Subtract))
+		{
+			FOV--;
+		}
+
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
+		{
+			RENDER_DISTANCE++;
+		}
+
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
+		{
+			RENDER_DISTANCE--;
+		}
+	}
+
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
 	{
 		direction += 5.625;
@@ -150,6 +196,8 @@ void Player::update(std::array<std::array<Cell, MAP_HEIGHT>, MAP_WIDTH> i_map)
 	}
 
 	direction = getDegrees(direction);
+	FOV = std::max(0, static_cast<int>(FOV)); FOV = std::min(360, static_cast<int>(FOV));
+	RENDER_DISTANCE = std::max(0, static_cast<int>(RENDER_DISTANCE)); RENDER_DISTANCE = std::min(1024, static_cast<int>(RENDER_DISTANCE));
 
 	for (int i = 0; i < SCREEN_WIDTH; i++)
 	{

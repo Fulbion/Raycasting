@@ -2,9 +2,9 @@
 
 constexpr float PI = 3.141592653589793f;
 
-constexpr float FOV = 60.f;
-constexpr float FOV_3D = 60.f;
-constexpr float RENDER_DISTANCE = 96;
+constexpr float CONST_FOV = 60.f;
+constexpr float CONST_FOV_3D = 60.f;
+constexpr float CONST_RENDER_DISTANCE = 96;
 
 constexpr unsigned int CELL_SIZE = 8;
 constexpr unsigned int MAP_CELL_SIZE = 8;
